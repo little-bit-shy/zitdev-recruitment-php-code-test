@@ -79,42 +79,6 @@ class Common
     // 回调状态过滤
     public static function checkStatusCallback($order_id, $status)
     {
-        $code_arr = [
-            '900' => [
-                'return' => 1,
-            ],
-            '901' => [
-                'code' => 1,
-            ],
-            '902' => [
-                'code' => 2,
-            ],
-            '903' => [
-                'code' => 3,
-            ],
-            '909' => [
-                'return' => 0,
-            ],
-            '915' => [
-                'return' => 0,
-            ],
-            '916' => [
-                'return' => 0,
-            ]
-        ];
-
-        if (isset($code_arr[$status])) {
-            if (isset($code_arr[$status]['return'])) {
-                if ($code_arr[$status]['return'] == 0) {
-                    infoLog('checkStatusCallback backend code is ' + $status);
-                }
-                return $code_arr[$status]['return'];
-            } else {
-                return $order_id . '-' . $code_arr[$status]['code'];
-            }
-        }
-
-
         // 是900 可以回调
         if ($status == 900) {
             return 1;
