@@ -9,15 +9,17 @@
 
 namespace Test\App;
 
+use mysql_xdevapi\Exception;
 use PHPUnit\Framework\TestCase;
 use App\App\Demo;
 use App\Service\AppLogger;
-Use App\Util\HttpRequest;
+use App\Util\HttpRequest;
 use App\Service\Common;
- 
-class DemoTest extends TestCase {
 
-    
+class DemoTest extends TestCase
+{
+
+
     /**
      * @group failing
      * Tests the api edit form
@@ -26,19 +28,28 @@ class DemoTest extends TestCase {
     //     echo "---222222-test_foo--\r\n";
     // }
 
-    public function test_get_user_info() {
-        $log = new  AppLogger(); 
-        $req = new  HttpRequest(); 
-        $myDemo = new Demo($log,$req);
-        $data = $myDemo->get_user_info();
-        echo "\n ntest_get_user_info title= ".$data['username']."\n";
-        $this->assertTrue(true);
-    }  
-     
+    public function test_get_user_info()
+    {
+        $log = new  AppLogger();
+        $req = new  HttpRequest();
+        $myDemo = new Demo($log, $req);
+        try {
+            $data = $myDemo->get_user_info();
+        }catch (\Exception $exception){
+            $data = null;
+        }
+        $this->assertNotEquals(null, $data, '接口请求失败');
+        $this->assertArrayHasKey('id', $data, '数据返回不合法');
+        $this->assertArrayHasKey('username', $data, '数据返回不合法');
+        $username = $data['username'];
+        echo "\n get_user_info====$username\n";
+    }
 
-    public function test_2() {
-        $res =  Common::checkStatusCallback("FD58585",903); 
+
+    public function test_2()
+    {
+        $res = Common::checkStatusCallback("FD58585", 903);
         echo "\n checkStatusCallback====$res\n";
         $this->assertTrue(true);
-    }  
+    }
 }
