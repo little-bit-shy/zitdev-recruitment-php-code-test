@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 /**
@@ -8,7 +9,7 @@ namespace App\Service;
  *
  */
 class Common
-{ 
+{
     protected static $debug;
 
     /**
@@ -20,7 +21,7 @@ class Common
     {
 
         try {
-            $cackeKey = 'cache-address-'.$address;
+            $cackeKey = 'cache-address-' . $address;
 
             // 從獲取座標
             $userLocation = redisx()->get($cackeKey);
@@ -31,7 +32,7 @@ class Common
             $key = 'time=' . time();
 
             // requestLog：寫日志
-            requestLog('Backend', 'Thrift', 'Http', 'phpgeohelper\\Geocoding->convert_addresses', 'https://geo-helper-hostr.ks-it.co',  [[$address, $key]]);
+            requestLog('Backend', 'Thrift', 'Http', 'phpgeohelper\\Geocoding->convert_addresses', 'https://geo-helper-hostr.ks-it.co', [[$address, $key]]);
 
             // getThriftService： 獲取 Thrift 服務
             $geoHelper = ServiceContainer::getThriftService('phpgeohelper\\Geocoding');
@@ -42,7 +43,7 @@ class Common
             $response = json_decode($response, true);
 
             if ($response['error'] == 0) {
-                responseLog('Backend', 'phpgeohelper\\Geocoding->hksf_addresses', 'https://geo-helper-hostr.ks-it.co', '200', '0',  $response);
+                responseLog('Backend', 'phpgeohelper\\Geocoding->hksf_addresses', 'https://geo-helper-hostr.ks-it.co', '200', '0', $response);
                 $data = $response['data'][0];
                 $coordinate = $data['coordinate'];
 
@@ -58,7 +59,7 @@ class Common
                     infoLog('geoHelper->hksf_addresses change failed === merchant_id is null' . $merchant_id);
                     return false;
                 }
-                if (!isset($data['error']) && (strpos($coordinate,',') !== false)) {
+                if (!isset($data['error']) && (strpos($coordinate, ',') !== false)) {
                     $arr = explode(',', $coordinate);
                     $user_location = $arr[1] . ',' . $arr[0];
 
@@ -67,7 +68,7 @@ class Common
                     return $user_location;
                 }
             }
-            responseLog('Backend', 'phpgeohelper\\Geocoding->hksf_addresses', 'https://geo-helper-hostr.ks-it.co', '401', '401',  $response);
+            responseLog('Backend', 'phpgeohelper\\Geocoding->hksf_addresses', 'https://geo-helper-hostr.ks-it.co', '401', '401', $response);
             return false;
         } catch (\Throwable $t) {
             criticalLog('geoHelperAddress critical ==' . $t->getMessage());
@@ -78,6 +79,42 @@ class Common
     // 回调状态过滤
     public static function checkStatusCallback($order_id, $status)
     {
+        $code_arr = [
+            '900' => [
+                'return' => 1,
+            ],
+            '901' => [
+                'code' => 1,
+            ],
+            '902' => [
+                'code' => 2,
+            ],
+            '903' => [
+                'code' => 3,
+            ],
+            '909' => [
+                'return' => 0,
+            ],
+            '915' => [
+                'return' => 0,
+            ],
+            '916' => [
+                'return' => 0,
+            ]
+        ];
+
+        if (isset($code_arr[$status])) {
+            if (isset($code_arr[$status]['return'])) {
+                if ($code_arr[$status]['return'] == 0) {
+                    infoLog('checkStatusCallback backend code is ' + $status);
+                }
+                return $code_arr[$status]['return'];
+            } else {
+                return $order_id . '-' . $code_arr[$status][$status];
+            }
+        }
+
+
         // 是900 可以回调
         if ($status == 900) {
             return 1;
@@ -90,6 +127,6 @@ class Common
         }
 
         $open_status_arr = ['901' => 1, '902' => 2, '903' => 3];
-        return $order_id.'-'.$open_status_arr[$status];
+        return $order_id . '-' . $open_status_arr[$status];
     }
 }
