@@ -32,11 +32,13 @@ class DemoTest extends TestCase {
         $myDemo = new Demo($log,$req);
         $data = $myDemo->get_user_info();
         echo "\n ntest_get_user_info title= ".$data['username']."\n";
+        $this->assertTrue(true);
     }  
      
 
     public function test_2() {
         $res =  Common::checkStatusCallback("FD58585",903); 
         echo "\n checkStatusCallback====$res\n";
+        $this->assertTrue(true);
     }  
 }

@@ -17,5 +17,6 @@ class AppLoggerTest extends TestCase
         $logger->info('This is info log message');
         $logger2 = new AppLogger('thinkLog');
         $logger2->info('This is info log message');
+        $this->assertTrue(true);
     }
 }

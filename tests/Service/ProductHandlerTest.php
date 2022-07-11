@@ -24,7 +24,8 @@ class ProductHandlerTest extends TestCase
         echo "\n GetProcuct 数量等于 = ".sizeof($getProcuct). "\n";
         foreach ($getProcuct as $v) {
             echo "\n name = ". $v["name"]  ." , price = " . $v["price"]  . "\n";
-        }  
+        }
+        $this->assertTrue(true);
     }
 
     public function testGetTimestamp()
@@ -35,7 +36,7 @@ class ProductHandlerTest extends TestCase
         foreach ($getProcuct as $v) {
             echo "\n name = ". $v["name"]  ." , create_at = " . $v["create_at"]  . "\n";
         }
-      
+        $this->assertTrue(true);
     }
 
 }

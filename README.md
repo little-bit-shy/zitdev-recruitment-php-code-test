@@ -51,6 +51,6 @@ if (isset($code_arr[$status])) {
         }
         return $code_arr[$status]['return'];
     } else {
-        return $order_id . '-' . $code_arr[$status][$status];
+        return $order_id . '-' . $code_arr[$status]['code'];
     }
 }
